@@ -1,0 +1,8 @@
+FROM alpine:3.21
+
+RUN apk add --no-cache curl postgresql-client bash && \
+    curl -L https://github.com/golang-migrate/migrate/releases/download/v4.17.1/migrate.linux-amd64.tar.gz | tar xvz && \
+    mv migrate /usr/local/bin/migrate && \
+    chmod +x /usr/local/bin/migrate
+
+ENTRYPOINT ["sh", "-c", "migrate -path /migrations -database \"postgresql://$DBUSER:$(cat $DBPASS_FILE)@db:5432/$DBNAME?sslmode=disable\" up"]
